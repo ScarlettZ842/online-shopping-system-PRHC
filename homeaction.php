@@ -33,7 +33,7 @@ if(isset($_POST["categoryhome"])){
 			echo "
 					
                     
-                               <li class='categoryhome' cid='$cid'><a href='store.php'>$cat_name</a></li>
+                               <li class='categoryhome' cid='$cid'><a href='store.php?cat=$cid'>$cat_name</a></li>
                     
 			";
 		}

@@ -1,0 +1,49 @@
+services:
+  # MySQL Database Service
+  db:
+    image: mysql:8.0
+    container_name: onlineshop_db
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: onlineshop
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/onlineshop.sql:/docker-entrypoint-initdb.d/onlineshop.sql
+    networks:
+      - shop_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PHP Apache Web Server Service
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: onlineshop_web
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - shop_network
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_NAME=onlineshop
+
+networks:
+  shop_network:
+    driver: bridge
+
+volumes:
+  db_data:

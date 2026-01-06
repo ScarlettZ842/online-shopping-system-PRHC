@@ -1,8 +1,5 @@
 <?php
 session_start();
-?>
-
-<?php
 
 // initializing variables
 $name = "";
@@ -13,7 +10,15 @@ $errors = array();
 $reg_date = date("Y/m/d");
 
 // connect to the database
-$db = mysqli_connect('localhost', 'root', '', 'onlineshop');
+// Use environment variables for Docker or fallback to defaults
+$db_host = getenv('DB_HOST') ?: 'localhost';
+$db_user = getenv('DB_USER') ?: 'root';
+$db_pass = getenv('DB_PASSWORD');
+if ($db_pass === false) {
+    $db_pass = ''; // Fallback for non-Docker environments
+}
+$db_name = getenv('DB_NAME') ?: 'onlineshop';
+$db = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 
 
 // REGISTER USER
